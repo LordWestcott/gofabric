@@ -1,11 +1,10 @@
-package app
+package gofabric
 
 import (
 	"database/sql"
 	"os"
 	"time"
 
-	"github.com/lordwestcott/gofabric/config"
 	"github.com/lordwestcott/gofabric/messaging"
 	"github.com/lordwestcott/gofabric/openai"
 	"github.com/lordwestcott/gofabric/stripe"
@@ -22,18 +21,21 @@ type App struct {
 	OpenAI    *openai.OpenAI
 }
 
-func InitApp(envFile string, config config.Config) (*App, error) {
+func InitApp(envFile string, dsn string) (*App, error) {
 	app := &App{}
-
-	db, err := OpenDB(0, config)
-	if err != nil {
-		return nil, err
-	}
-	app.DB = db
 
 	if err := godotenv.Load(envFile); err != nil {
 		color.Yellow("No .env file found")
 		return nil, err
+	}
+
+	if os.Getenv("DATABASE_URL") != "" {
+
+		db, err := OpenDB(0, os.Getenv("DATABASE_URL"))
+		if err != nil {
+			return nil, err
+		}
+		app.DB = db
 	}
 
 	if os.Getenv("STRIPE_PRIVATE_KEY") != "" {
@@ -61,8 +63,8 @@ func InitApp(envFile string, config config.Config) (*App, error) {
 	return app, nil
 }
 
-func OpenDB(attempt int, config config.Config) (*sql.DB, error) {
-	db, err := sql.Open("pgx", config.DSN)
+func OpenDB(attempt int, dsn string) (*sql.DB, error) {
+	db, err := sql.Open("pgx", dsn)
 	if err != nil {
 		if attempt > 5 {
 			color.Red("Error opening database: %v", err)
@@ -72,7 +74,7 @@ func OpenDB(attempt int, config config.Config) (*sql.DB, error) {
 		color.Yellow("Backing off for 5 seconds...")
 		<-time.After(5 * time.Second)
 		attempt++
-		return OpenDB(attempt, config)
+		return OpenDB(attempt, dsn)
 	}
 
 	err = db.Ping()
