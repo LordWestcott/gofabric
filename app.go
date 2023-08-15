@@ -2,6 +2,7 @@ package gofabric
 
 import (
 	"database/sql"
+	"log"
 	"os"
 	"time"
 
@@ -19,6 +20,8 @@ type App struct {
 	Stripe    *stripe.Stripe
 	Messaging *messaging.Messaging
 	OpenAI    *openai.OpenAI
+	ErrorLog  *log.Logger
+	InfoLog   *log.Logger
 }
 
 func InitApp(envFile string) (*App, error) {
@@ -59,6 +62,11 @@ func InitApp(envFile string) (*App, error) {
 		app.OpenAI = openAI
 	}
 
+	infoLog, errorLog := app.startLoggers()
+
+	app.ErrorLog = errorLog
+	app.InfoLog = infoLog
+
 	return app, nil
 }
 
@@ -82,4 +90,14 @@ func OpenDB(attempt int, dsn string) (*sql.DB, error) {
 	}
 
 	return db, nil
+}
+
+func (a *App) startLoggers() (*log.Logger, *log.Logger) {
+	var infoLog *log.Logger
+	var errorLog *log.Logger
+
+	infoLog = log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
+	errorLog = log.New(os.Stdout, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)
+
+	return infoLog, errorLog
 }
