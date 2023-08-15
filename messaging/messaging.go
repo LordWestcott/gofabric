@@ -3,20 +3,22 @@ package messaging
 import (
 	"os"
 
+	"github.com/lordwestcott/gofabric/messaging/email"
 	"github.com/lordwestcott/gofabric/messaging/sms"
+	"github.com/lordwestcott/gofabric/messaging/verification"
+	"github.com/lordwestcott/gofabric/messaging/whatsapp"
 )
 
 type Messaging struct {
-	// EmailService        *EmailService
-	SMSService sms.SMSService
-	// VerificationService *VerificationService
-	// WhatsAppService     *WhatsAppService //<- requires paid account
+	EmailService        email.EmailService
+	SMSService          sms.SMSService
+	VerificationService verification.VerificationService
+	WhatsAppService     whatsapp.WhatsAppService //<- requires paid account
 }
 
 func NewMessaging() (*Messaging, error) {
 
-	//check what services to use
-	var sms_service sms.SMSService
+	var messaging *Messaging
 
 	switch os.Getenv("SMS_SERVICE") {
 	case "twilio":
@@ -24,15 +26,43 @@ func NewMessaging() (*Messaging, error) {
 		if err != nil {
 			return nil, err
 		}
-		sms_service = service
+		messaging.SMSService = service
 	default:
-		sms_service = nil
+		messaging.SMSService = nil
 	}
 
-	return &Messaging{
-		// EmailService:        NewEmailService(),
-		SMSService: sms_service,
-		// VerificationService: NewVerificationService(),
-		// WhatsAppService:     NewWhatsAppService(),
-	}, nil
+	switch os.Getenv("EMAIL_SERVICE") {
+	case "sendgrid":
+		service, err := email.NewSendGrid()
+		if err != nil {
+			return nil, err
+		}
+		messaging.EmailService = service
+	default:
+		messaging.EmailService = nil
+	}
+
+	switch os.Getenv("WHATSAPP_SERVICE") {
+	case "twilio":
+		service, err := whatsapp.NewTwilioWhatsAppService()
+		if err != nil {
+			return nil, err
+		}
+		messaging.WhatsAppService = service
+	default:
+		messaging.WhatsAppService = nil
+	}
+
+	switch os.Getenv("VERIFICATION_SERVICE") {
+	case "twilio":
+		service, err := verification.NewTwilioVerificationService()
+		if err != nil {
+			return nil, err
+		}
+		messaging.VerificationService = service
+	default:
+		messaging.VerificationService = nil
+	}
+
+	return messaging, nil
 }

@@ -6,5 +6,5 @@ type VerificationService interface {
 	VerifyNumberWithCall(to string) error
 	VerifyNumberWithCallWithExt(to, phone_ext string) error
 	VerifyEmail(to string) error
-	CheckVerificationCodeWithPhoneNumberOrEmail(to, code string) error
+	CheckVerificationCodeWithPhoneNumberOrEmail(to, code string) (*string, error)
 }
