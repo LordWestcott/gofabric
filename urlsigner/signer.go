@@ -22,6 +22,8 @@ func (s *Signer) New(secret string) error {
 	return nil
 }
 
+// Generates a signed token from a url string.
+// The token is appended to the url as a query string parameter `hash`.
 func (s *Signer) GenerateTokenFromString(data string) string {
 	var urlToSign string
 

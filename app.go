@@ -8,6 +8,7 @@ import (
 
 	"github.com/lordwestcott/gofabric/messaging"
 	"github.com/lordwestcott/gofabric/openai"
+	"github.com/lordwestcott/gofabric/signin/google"
 	"github.com/lordwestcott/gofabric/stripe"
 	"github.com/lordwestcott/gofabric/urlsigner"
 
@@ -17,13 +18,14 @@ import (
 
 type App struct {
 	// Models    data.Models //Must be implemented on project using this package.
-	DB        *sql.DB
-	Stripe    *stripe.Stripe
-	Messaging *messaging.Messaging
-	OpenAI    *openai.OpenAI
-	URLSigner *urlsigner.Signer
-	ErrorLog  *log.Logger
-	InfoLog   *log.Logger
+	DB           *sql.DB
+	Stripe       *stripe.Stripe
+	Messaging    *messaging.Messaging
+	OpenAI       *openai.OpenAI
+	URLSigner    *urlsigner.Signer
+	ErrorLog     *log.Logger
+	InfoLog      *log.Logger
+	GoogleSignIn *google.GoogleSignIn
 }
 
 func InitApp(envFile string) (*App, error) {
@@ -62,6 +64,13 @@ func InitApp(envFile string) (*App, error) {
 		}
 
 		app.OpenAI = openAI
+	}
+
+	if os.Getenv("GOOGLE_CLIENT_ID") != "" {
+		g := google.GoogleSignIn{}
+		g.New(os.Getenv("GOOGLE_CLIENT_ID"))
+
+		app.GoogleSignIn = &g
 	}
 
 	infoLog, errorLog := app.startLoggers()
