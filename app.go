@@ -27,7 +27,7 @@ type App struct {
 	GoogleSignIn *google.GoogleSignIn
 }
 
-func InitApp(envFile string) (*App, error) {
+func InitApp() (*App, error) {
 	app := &App{}
 
 	if os.Getenv("DATABASE_URL") != "" {
