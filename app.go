@@ -13,7 +13,6 @@ import (
 	"github.com/lordwestcott/gofabric/urlsigner"
 
 	"github.com/fatih/color"
-	"github.com/joho/godotenv"
 )
 
 type App struct {
@@ -30,11 +29,6 @@ type App struct {
 
 func InitApp(envFile string) (*App, error) {
 	app := &App{}
-
-	if err := godotenv.Load(envFile); err != nil {
-		color.Yellow("No .env file found")
-		return nil, err
-	}
 
 	if os.Getenv("DATABASE_URL") != "" {
 		db, err := OpenDB(0, os.Getenv("DATABASE_URL"))
