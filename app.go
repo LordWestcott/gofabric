@@ -9,6 +9,7 @@ import (
 	"github.com/lordwestcott/gofabric/messaging"
 	"github.com/lordwestcott/gofabric/openai"
 	"github.com/lordwestcott/gofabric/stripe"
+	"github.com/lordwestcott/gofabric/urlsigner"
 
 	"github.com/fatih/color"
 	"github.com/joho/godotenv"
@@ -20,6 +21,7 @@ type App struct {
 	Stripe    *stripe.Stripe
 	Messaging *messaging.Messaging
 	OpenAI    *openai.OpenAI
+	URLSigner *urlsigner.Signer
 	ErrorLog  *log.Logger
 	InfoLog   *log.Logger
 }
@@ -66,6 +68,14 @@ func InitApp(envFile string) (*App, error) {
 
 	app.ErrorLog = errorLog
 	app.InfoLog = infoLog
+
+	if os.Getenv("SIGNING_KEY") != "" {
+		signer := urlsigner.Signer{}
+		signer.New(os.Getenv("SIGNING_KEY"))
+		app.URLSigner = &signer
+	} else {
+		app.URLSigner = nil
+	}
 
 	return app, nil
 }
