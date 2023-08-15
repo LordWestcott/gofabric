@@ -21,7 +21,7 @@ type App struct {
 	OpenAI    *openai.OpenAI
 }
 
-func InitApp(envFile string, dsn string) (*App, error) {
+func InitApp(envFile string) (*App, error) {
 	app := &App{}
 
 	if err := godotenv.Load(envFile); err != nil {
@@ -30,7 +30,6 @@ func InitApp(envFile string, dsn string) (*App, error) {
 	}
 
 	if os.Getenv("DATABASE_URL") != "" {
-
 		db, err := OpenDB(0, os.Getenv("DATABASE_URL"))
 		if err != nil {
 			return nil, err
