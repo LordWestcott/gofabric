@@ -19,7 +19,7 @@ type Google_OAuth2 struct {
 
 func (o *Google_OAuth2) New(redirect, googleClientID, googleClientSecret, state string) error {
 	o.SSOGoLang = &oauth2.Config{
-		RedirectURL:  redirect,
+		RedirectURL:  "",
 		ClientID:     googleClientID,
 		ClientSecret: googleClientSecret,
 		Scopes: []string{
@@ -61,7 +61,7 @@ func (o *Google_OAuth2) getUserData(state, code string) ([]byte, error) {
 		return nil, err
 	}
 
-	response, err := http.Get("https://googleapis.com/oauth2/v2/userinfo?access_token=" + token.AccessToken)
+	response, err := http.Get("https://www.googleapis.com/oauth2/v2/userinfo?access_token=" + token.AccessToken)
 	if err != nil {
 		return nil, err
 	}
