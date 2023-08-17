@@ -19,7 +19,7 @@ type Google_OAuth2 struct {
 
 func (o *Google_OAuth2) New(redirect, googleClientID, googleClientSecret, state string) error {
 	o.SSOGoLang = &oauth2.Config{
-		RedirectURL:  "",
+		RedirectURL:  redirect,
 		ClientID:     googleClientID,
 		ClientSecret: googleClientSecret,
 		Scopes: []string{
