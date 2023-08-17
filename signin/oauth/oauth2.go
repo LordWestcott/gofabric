@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 
 	"golang.org/x/oauth2"
@@ -39,27 +38,11 @@ func (o *Google_OAuth2) SignIn(w http.ResponseWriter, r *http.Request) {
 
 }
 
-type IGoogle_Auth_Account interface {
-	Process(interface{}) error
-}
-
-func (o *Google_OAuth2) CallBack(w http.ResponseWriter, r *http.Request, acc IGoogle_Auth_Account, redirectUrl string) {
+func (o *Google_OAuth2) CallBack(w http.ResponseWriter, r *http.Request) ([]byte, error) {
 	state := r.FormValue("state")
 	code := r.FormValue("code")
 
-	data, err := o.getUserData(state, code)
-	if err != nil {
-		//This needs changing.
-		log.Fatal("error getting user data")
-	}
-
-	err = acc.Process(data)
-	if err != nil {
-		//This needs changing.
-		log.Fatal("failed to process user data")
-	}
-
-	http.Redirect(w, r, redirectUrl, http.StatusTemporaryRedirect)
+	return o.getUserData(state, code)
 }
 
 func (o *Google_OAuth2) getUserData(state, code string) ([]byte, error) {
