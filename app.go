@@ -12,6 +12,10 @@ import (
 	"github.com/lordwestcott/gofabric/stripe"
 	"github.com/lordwestcott/gofabric/urlsigner"
 
+	_ "github.com/jackc/pgconn"
+	_ "github.com/jackc/pgx/v4"
+	_ "github.com/jackc/pgx/v4/stdlib"
+
 	"github.com/fatih/color"
 )
 

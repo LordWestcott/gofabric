@@ -18,7 +18,7 @@ type Messaging struct {
 
 func NewMessaging() (*Messaging, error) {
 
-	var messaging *Messaging
+	messaging := Messaging{}
 
 	switch os.Getenv("SMS_SERVICE") {
 	case "twilio":
@@ -64,5 +64,5 @@ func NewMessaging() (*Messaging, error) {
 		messaging.VerificationService = nil
 	}
 
-	return messaging, nil
+	return &messaging, nil
 }
