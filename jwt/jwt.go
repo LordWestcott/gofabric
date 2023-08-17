@@ -1,4 +1,4 @@
-package gofabric
+package jwt
 
 import (
 	"errors"
@@ -15,9 +15,11 @@ type Claims struct {
 	jwt.RegisteredClaims
 }
 
+type JWT struct{}
+
 // GenerateJWT generates a JWT token.
 // If expMins is 0, then the token will never expire.
-func (a *App) GenerateJWT(secret []byte, tokenClaims *Claims, expSecs int) (string, error) {
+func (j *JWT) GenerateJWT(secret []byte, tokenClaims *Claims, expSecs int) (string, error) {
 	if len(secret) < 1 {
 		return "", errors.New("No secret provided")
 	}

@@ -8,7 +8,7 @@ import (
 
 	"github.com/lordwestcott/gofabric/messaging"
 	"github.com/lordwestcott/gofabric/openai"
-	"github.com/lordwestcott/gofabric/signin/google"
+	"github.com/lordwestcott/gofabric/signin/oauth"
 	"github.com/lordwestcott/gofabric/stripe"
 	"github.com/lordwestcott/gofabric/urlsigner"
 
@@ -21,14 +21,14 @@ import (
 
 type App struct {
 	// Models    data.Models //Must be implemented on project using this package.
-	DB           *sql.DB
-	Stripe       *stripe.Stripe
-	Messaging    *messaging.Messaging
-	OpenAI       *openai.OpenAI
-	URLSigner    *urlsigner.Signer
-	ErrorLog     *log.Logger
-	InfoLog      *log.Logger
-	GoogleSignIn *google.GoogleSignIn
+	DB            *sql.DB
+	Stripe        *stripe.Stripe
+	Messaging     *messaging.Messaging
+	OpenAI        *openai.OpenAI
+	URLSigner     *urlsigner.Signer
+	ErrorLog      *log.Logger
+	InfoLog       *log.Logger
+	Google_OAuth2 *oauth.Google_OAuth2
 }
 
 func InitApp() (*App, error) {
@@ -64,11 +64,17 @@ func InitApp() (*App, error) {
 		app.OpenAI = openAI
 	}
 
-	if os.Getenv("GOOGLE_CLIENT_ID") != "" {
-		g := google.GoogleSignIn{}
-		g.New(os.Getenv("GOOGLE_CLIENT_ID"))
+	if os.Getenv("GOOGLE_CLIENT_ID") != "" &&
+		os.Getenv("GOOGLE_CLIENT_SECRET") != "" &&
+		os.Getenv("GOOGLE_STATE") != "" &&
+		os.Getenv("GOOGLE_REDIRECT") != "" {
+		g := oauth.Google_OAuth2{}
+		err := g.New(os.Getenv("GOOGLE_REDIRECT"), os.Getenv("GOOGLE_CLIENT_ID"), os.Getenv("GOOGLE_CLIENT_SECRET"), os.Getenv("GOOGLE_STATE"))
+		if err != nil {
+			return nil, err
+		}
 
-		app.GoogleSignIn = &g
+		app.Google_OAuth2 = &g
 	}
 
 	infoLog, errorLog := app.startLoggers()
