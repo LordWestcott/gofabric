@@ -6,8 +6,11 @@ import (
 	"os"
 	"time"
 
+	"github.com/alexedwards/scs/v2"
+	"github.com/lordwestcott/gofabric/helpers"
 	"github.com/lordwestcott/gofabric/messaging"
 	"github.com/lordwestcott/gofabric/openai"
+	"github.com/lordwestcott/gofabric/session"
 	"github.com/lordwestcott/gofabric/signin/oauth"
 	"github.com/lordwestcott/gofabric/stripe"
 	"github.com/lordwestcott/gofabric/urlsigner"
@@ -29,6 +32,8 @@ type App struct {
 	ErrorLog      *log.Logger
 	InfoLog       *log.Logger
 	Google_OAuth2 *oauth.Google_OAuth2
+	Helpers       *helpers.Helpers
+	Session       *scs.SessionManager
 }
 
 func InitApp() (*App, error) {
@@ -89,6 +94,21 @@ func InitApp() (*App, error) {
 	} else {
 		app.URLSigner = nil
 	}
+
+	app.Helpers = &helpers.Helpers{}
+
+	ses := session.Session{
+		CookieLifetime: os.Getenv("COOKIE_LIFETIME"),
+		CookiePersist:  os.Getenv("COOKIE_PERSISTS"),
+		CookieName:     os.Getenv("COOKIE_NAME"),
+		CookieDomain:   os.Getenv("COOKIE_DOMAIN"),
+		SessionType:    os.Getenv("SESSION_TYPE"),
+		CookieSecure:   os.Getenv("COOKIE_SECURE"),
+	}
+
+	ses.DBPool = app.DB
+
+	app.Session = ses.InitSession()
 
 	return app, nil
 }

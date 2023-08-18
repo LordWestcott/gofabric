@@ -3,6 +3,10 @@ module github.com/lordwestcott/gofabric
 go 1.20
 
 require (
+	github.com/alexedwards/scs/mysqlstore v0.0.0-20230327161757-10d4299e3b24
+	github.com/alexedwards/scs/postgresstore v0.0.0-20230327161757-10d4299e3b24
+	github.com/alexedwards/scs/redisstore v0.0.0-20230327161757-10d4299e3b24
+	github.com/alexedwards/scs/v2 v2.5.1
 	github.com/bwmarrin/go-alone v0.0.0-20190806015146-742bb55d1631
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/fatih/color v1.15.0
@@ -14,6 +18,7 @@ require (
 	github.com/sendgrid/sendgrid-go v3.13.0+incompatible
 	github.com/stripe/stripe-go/v74 v74.30.0
 	github.com/twilio/twilio-go v1.11.0
+	github.com/upper/db/v4 v4.6.0
 	golang.org/x/oauth2 v0.11.0
 )
 
@@ -23,6 +28,7 @@ require (
 	github.com/golang-jwt/jwt v3.2.2+incompatible // indirect
 	github.com/golang/mock v1.6.0 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
+	github.com/gomodule/redigo v1.8.0 // indirect
 	github.com/jackc/chunkreader/v2 v2.0.1 // indirect
 	github.com/jackc/pgio v1.0.0 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
