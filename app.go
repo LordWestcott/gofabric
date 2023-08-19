@@ -40,7 +40,7 @@ type App struct {
 func InitApp() (*App, error) {
 	app := &App{}
 
-	app.Host = os.Getenv("Host")
+	app.Host = os.Getenv("HOST")
 
 	if os.Getenv("DATABASE_URL") != "" {
 		db, err := OpenDB(0, os.Getenv("DATABASE_URL"))
