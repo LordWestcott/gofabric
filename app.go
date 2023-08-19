@@ -34,10 +34,13 @@ type App struct {
 	Google_OAuth2 *oauth.Google_OAuth2
 	Helpers       *helpers.Helpers
 	Session       *scs.SessionManager
+	Host          string
 }
 
 func InitApp() (*App, error) {
 	app := &App{}
+
+	app.Host = os.Getenv("Host")
 
 	if os.Getenv("DATABASE_URL") != "" {
 		db, err := OpenDB(0, os.Getenv("DATABASE_URL"))
@@ -74,7 +77,8 @@ func InitApp() (*App, error) {
 		os.Getenv("GOOGLE_STATE") != "" &&
 		os.Getenv("GOOGLE_REDIRECT") != "" {
 		g := oauth.Google_OAuth2{}
-		err := g.New(os.Getenv("GOOGLE_REDIRECT"), os.Getenv("GOOGLE_CLIENT_ID"), os.Getenv("GOOGLE_CLIENT_SECRET"), os.Getenv("GOOGLE_STATE"))
+		redirect := app.Host + os.Getenv("GOOGLE_REDIRECT")
+		err := g.New(redirect, os.Getenv("GOOGLE_CLIENT_ID"), os.Getenv("GOOGLE_CLIENT_SECRET"), os.Getenv("GOOGLE_STATE"))
 		if err != nil {
 			return nil, err
 		}
