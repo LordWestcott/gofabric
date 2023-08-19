@@ -8,6 +8,7 @@ import (
 
 	"github.com/alexedwards/scs/v2"
 	"github.com/lordwestcott/gofabric/helpers"
+	"github.com/lordwestcott/gofabric/jwt"
 	"github.com/lordwestcott/gofabric/messaging"
 	"github.com/lordwestcott/gofabric/openai"
 	"github.com/lordwestcott/gofabric/session"
@@ -34,6 +35,7 @@ type App struct {
 	Google_OAuth2 *oauth.Google_OAuth2
 	Helpers       *helpers.Helpers
 	Session       *scs.SessionManager
+	JWT           *jwt.JWT
 	Host          string
 }
 
@@ -101,18 +103,27 @@ func InitApp() (*App, error) {
 
 	app.Helpers = &helpers.Helpers{}
 
-	ses := session.Session{
-		CookieLifetime: os.Getenv("COOKIE_LIFETIME"),
-		CookiePersist:  os.Getenv("COOKIE_PERSISTS"),
-		CookieName:     os.Getenv("COOKIE_NAME"),
-		CookieDomain:   os.Getenv("COOKIE_DOMAIN"),
-		SessionType:    os.Getenv("SESSION_TYPE"),
-		CookieSecure:   os.Getenv("COOKIE_SECURE"),
+	if os.Getenv("COOKIE_LIFETIME") != "" &&
+		os.Getenv("COOKIE_PERSISTS") != "" &&
+		os.Getenv("COOKIE_NAME") != "" &&
+		os.Getenv("COOKIE_DOMAIN") != "" &&
+		os.Getenv("SESSION_TYPE") != "" &&
+		os.Getenv("COOKIE_SECURE") != "" {
+		ses := session.Session{
+			CookieLifetime: os.Getenv("COOKIE_LIFETIME"),
+			CookiePersist:  os.Getenv("COOKIE_PERSISTS"),
+			CookieName:     os.Getenv("COOKIE_NAME"),
+			CookieDomain:   os.Getenv("COOKIE_DOMAIN"),
+			SessionType:    os.Getenv("SESSION_TYPE"),
+			CookieSecure:   os.Getenv("COOKIE_SECURE"),
+		}
+		ses.DBPool = app.DB
+		app.Session = ses.InitSession()
 	}
 
-	ses.DBPool = app.DB
-
-	app.Session = ses.InitSession()
+	app.JWT = &jwt.JWT{
+		Secret: []byte(os.Getenv("JWT_SECRET")),
+	}
 
 	return app, nil
 }

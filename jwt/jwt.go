@@ -15,12 +15,14 @@ type Claims struct {
 	jwt.RegisteredClaims
 }
 
-type JWT struct{}
+type JWT struct {
+	Secret []byte
+}
 
 // GenerateJWT generates a JWT token.
 // If expMins is 0, then the token will never expire.
-func (j *JWT) GenerateJWT(secret []byte, tokenClaims *Claims, expSecs int) (string, error) {
-	if len(secret) < 1 {
+func (j *JWT) GenerateJWT(tokenClaims *Claims, expSecs int) (string, error) {
+	if len(j.Secret) < 1 {
 		return "", errors.New("No secret provided")
 	}
 
@@ -34,7 +36,7 @@ func (j *JWT) GenerateJWT(secret []byte, tokenClaims *Claims, expSecs int) (stri
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, tokenClaims)
 
-	tokenString, err := token.SignedString(secret)
+	tokenString, err := token.SignedString(j.Secret)
 	if err != nil {
 		return "", err
 	}
@@ -48,7 +50,7 @@ type JWTDetails struct {
 	Valid  bool
 }
 
-func VerifyJWT(secret []byte, tokenString string) (*JWTDetails, error) {
+func (j *JWT) VerifyJWT(tokenString string) (*JWTDetails, error) {
 	details := &JWTDetails{}
 
 	if tokenString == "" {
@@ -60,7 +62,7 @@ func VerifyJWT(secret []byte, tokenString string) (*JWTDetails, error) {
 		tokenString,
 		claims,
 		func(token *jwt.Token) (interface{}, error) {
-			return secret, nil
+			return j.Secret, nil
 		},
 	)
 
