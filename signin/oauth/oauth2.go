@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"os"
+	"strings"
 
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
@@ -17,14 +19,24 @@ type Google_OAuth2 struct {
 }
 
 func (o *Google_OAuth2) New(redirect, googleClientID, googleClientSecret, state string) error {
+
+	scopes := []string{
+		"https://www.googleapis.com/auth/userinfo.email",
+		"https://www.googleapis.com/auth/userinfo.profile",
+	}
+
+	additional := os.Getenv("GOOGLE_SCOPES_ADDITIONAL")
+	if additional != "" {
+		as := strings.Split(additional, "|")
+		scopes = append(scopes, as...)
+	}
+
 	o.SSOGoLang = &oauth2.Config{
 		RedirectURL:  redirect,
 		ClientID:     googleClientID,
 		ClientSecret: googleClientSecret,
-		Scopes: []string{
-			"https://www.googleapis.com/auth/userinfo.email",
-		},
-		Endpoint: google.Endpoint,
+		Scopes:       scopes,
+		Endpoint:     google.Endpoint,
 	}
 
 	o.RandomString = state
