@@ -121,8 +121,10 @@ func InitApp() (*App, error) {
 		app.Session = ses.InitSession()
 	}
 
-	app.JWT = &jwt.JWT{
-		Secret: []byte(os.Getenv("JWT_SECRET")),
+	if os.Getenv("JWT_SECRET") != "" {
+		app.JWT = &jwt.JWT{
+			Secret: []byte(os.Getenv("JWT_SECRET")),
+		}
 	}
 
 	return app, nil
