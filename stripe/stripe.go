@@ -2674,7 +2674,7 @@ func (s *Stripe) ListQuotes(opt_params *stripe.QuoteListParams) *quote.Iter {
 func (s *Stripe) CreateSubscription(customer_id string, params *stripe.SubscriptionParams) (*stripe.Subscription, error) {
 	params.Customer = stripe.String(customer_id)
 
-	if params.Items != nil {
+	if params.Items == nil {
 		return nil, errors.New("items are required")
 	}
 
