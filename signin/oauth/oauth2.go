@@ -44,7 +44,7 @@ func (o *Google_OAuth2) New(redirect, googleClientID, googleClientSecret, state 
 }
 
 func (o *Google_OAuth2) SignIn(w http.ResponseWriter, r *http.Request) {
-	url := o.SSOGoLang.AuthCodeURL(o.RandomString)
+	url := o.SSOGoLang.AuthCodeURL(o.RandomString, oauth2.AccessTypeOffline)
 	fmt.Println(url) //for testing purposes
 	http.Redirect(w, r, url, http.StatusTemporaryRedirect)
 
@@ -56,6 +56,8 @@ func (o *Google_OAuth2) CallBack(w http.ResponseWriter, r *http.Request) ([]byte
 
 	return o.getUserData(state, code)
 }
+
+// func (o *Google_OAuth2)
 
 func (o *Google_OAuth2) getUserData(state, code string) ([]byte, error) {
 	if state != o.RandomString {

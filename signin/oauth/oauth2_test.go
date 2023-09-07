@@ -1,6 +1,8 @@
 package oauth
 
 import (
+	"fmt"
+	"net/http/httptest"
 	"os"
 	"testing"
 
@@ -62,4 +64,17 @@ func TestGoogle_OAuth2_ShouldContainAdditionalScopes(t *testing.T) {
 	}
 
 	os.Setenv("GOOGLE_SCOPES_ADDITIONAL", ogscopes)
+}
+
+func TestGoogle_OAuth2_SignIn(t *testing.T) {
+
+	rr := httptest.ResponseRecorder{}
+	req := httptest.NewRequest("GET", "/signin/oauth", nil)
+
+	goa.SSOGoLang.RedirectURL = "https://g8wye2qyxd.execute-api.eu-north-1.amazonaws.com/google-signin/callback"
+
+	goa.SignIn(&rr, req)
+
+	fmt.Println(rr.Body.String())
+	defer req.Body.Close()
 }

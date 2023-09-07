@@ -15,6 +15,7 @@ import (
 	"github.com/lordwestcott/gofabric/signin/oauth"
 	"github.com/lordwestcott/gofabric/stripe"
 	"github.com/lordwestcott/gofabric/urlsigner"
+	"github.com/lordwestcott/gofabric/yt"
 
 	_ "github.com/jackc/pgconn"
 	_ "github.com/jackc/pgx/v4"
@@ -37,6 +38,7 @@ type App struct {
 	Session       *scs.SessionManager
 	JWT           *jwt.JWT
 	Host          string
+	Youtube       *yt.Youtube
 }
 
 func InitApp() (*App, error) {
@@ -126,6 +128,8 @@ func InitApp() (*App, error) {
 			Secret: []byte(os.Getenv("JWT_SECRET")),
 		}
 	}
+
+	app.Youtube = &yt.Youtube{}
 
 	return app, nil
 }
