@@ -47,28 +47,30 @@ func (o *Google_OAuth2) SignIn(w http.ResponseWriter, r *http.Request) {
 	url := o.SSOGoLang.AuthCodeURL(o.RandomString, oauth2.AccessTypeOffline)
 	fmt.Println(url) //for testing purposes
 	http.Redirect(w, r, url, http.StatusTemporaryRedirect)
-
 }
 
-func (o *Google_OAuth2) CallBack(w http.ResponseWriter, r *http.Request) ([]byte, error) {
+func (o *Google_OAuth2) CallBack(w http.ResponseWriter, r *http.Request) (*oauth2.Token, []byte, error) {
 	state := r.FormValue("state")
 	code := r.FormValue("code")
 
-	return o.getUserData(state, code)
-}
-
-// func (o *Google_OAuth2)
-
-func (o *Google_OAuth2) getUserData(state, code string) ([]byte, error) {
 	if state != o.RandomString {
-		return nil, errors.New("invalid user state")
+		return nil, nil, errors.New("invalid user state")
 	}
 
 	token, err := o.SSOGoLang.Exchange(context.Background(), code)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
+	userData, err := getUserDataFromToken(token)
+	if err != nil {
+		return token, nil, err
+	}
+
+	return token, userData, nil
+}
+
+func getUserDataFromToken(token *oauth2.Token) ([]byte, error) {
 	response, err := http.Get("https://www.googleapis.com/oauth2/v2/userinfo?access_token=" + token.AccessToken)
 	if err != nil {
 		return nil, err
