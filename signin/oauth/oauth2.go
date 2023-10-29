@@ -49,9 +49,15 @@ func (o *Google_OAuth2) SignIn(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, url, http.StatusTemporaryRedirect)
 }
 
-func (o *Google_OAuth2) CallBack(w http.ResponseWriter, r *http.Request) (*oauth2.Token, []byte, error) {
-	state := r.FormValue("state")
-	code := r.FormValue("code")
+func (o *Google_OAuth2) CallBack(code, state string) (*oauth2.Token, []byte, error) {
+
+	if code == "" {
+		return nil, nil, errors.New("empty user code")
+	}
+
+	if state == "" {
+		return nil, nil, errors.New("empty user state")
+	}
 
 	if state != o.RandomString {
 		return nil, nil, errors.New("invalid user state")
