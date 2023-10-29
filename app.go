@@ -81,7 +81,7 @@ func InitApp() (*App, error) {
 		os.Getenv("GOOGLE_STATE") != "" &&
 		os.Getenv("GOOGLE_REDIRECT") != "" {
 		g := oauth.Google_OAuth2{}
-		redirect := app.Host + os.Getenv("GOOGLE_REDIRECT")
+		redirect := os.Getenv("GOOGLE_REDIRECT")
 		err := g.New(redirect, os.Getenv("GOOGLE_CLIENT_ID"), os.Getenv("GOOGLE_CLIENT_SECRET"), os.Getenv("GOOGLE_STATE"))
 		if err != nil {
 			return nil, err
